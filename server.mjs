@@ -6,10 +6,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const distPath = path.join(__dirname, 'dist');
-const publicPath = path.join(__dirname, 'public');
+const dataPath = path.join(__dirname, 'data');
 const port = Number(process.env.PORT || 4173);
 
-app.use('/data', express.static(path.join(publicPath, 'data')));
+app.use('/data', express.static(dataPath));
 app.use(express.static(distPath));
 
 app.get('*', (_req, res) => {

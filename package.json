@@ -9,7 +9,7 @@
     "preview": "vite preview --host 0.0.0.0",
     "corpus:generate": "node scripts/generate-corpus.mjs",
     "serve": "node server.mjs",
-    "docker:start": "npm run corpus:generate -- --source /skills-ro --output /app/public/data/skills-corpus.json && npm run build && npm run serve"
+    "docker:start": "npm run corpus:generate -- --source /skills-ro --output /app/data/skills-corpus.json && npm run build && npm run serve"
   },
   "dependencies": {
     "d3": "^7.9.0",

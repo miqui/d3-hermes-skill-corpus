@@ -6,6 +6,6 @@ dist/
 .DS_Store
 .env
 coverage/
-public/data/skills-corpus.json
+/public/data/
 vite.config.js
 vite.config.d.ts

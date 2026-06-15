@@ -5,7 +5,7 @@ Phase 1 local-only MVP for exploring the Hermes skill corpus as an interactive D
 ## What this is
 
 - Loads Hermes skills from `~/.hermes/skills`
-- Generates an app-consumable JSON corpus into `public/data/skills-corpus.json`
+- Generates an app-consumable JSON corpus into `data/skills-corpus.json`
 - Renders a collapsible tree explorer with a details panel
 - Supports search/filter by skill name or tag
 - Highlights related skills in the tree when a skill is selected
@@ -26,8 +26,8 @@ Phase 1 local-only MVP for exploring the Hermes skill corpus as an interactive D
 ```text
 .
 ├── compose.yaml
+├── data/skills-corpus.json
 ├── Dockerfile
-├── public/data/skills-corpus.json
 ├── scripts/generate-corpus.mjs
 ├── server.mjs
 ├── src/
@@ -59,7 +59,7 @@ npm run corpus:generate
 Optional custom paths:
 
 ```bash
-npm run corpus:generate -- --source ~/.hermes/skills --output public/data/skills-corpus.json
+npm run corpus:generate -- --source ~/.hermes/skills --output data/skills-corpus.json
 ```
 
 The generated JSON includes:
@@ -114,7 +114,7 @@ This mounts your local Hermes skills directory read-only into the container at `
 - `npm run dev` — Vite dev server
 - `npm run build` — TypeScript check + production build
 - `npm run preview` — Vite preview server
-- `npm run corpus:generate` — generate `public/data/skills-corpus.json`
+- `npm run corpus:generate` — generate `data/skills-corpus.json`
 - `npm run serve` — serve the built app with Express
 - `npm run docker:start` — container startup command
 
