@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    ports:
+      - "4173:4173"
+    volumes:
+      - ${HOME}/.hermes/skills:/skills-ro:ro
+    environment:
+      PORT: "4173"

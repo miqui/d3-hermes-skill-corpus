@@ -1,0 +1,31 @@
+{
+  "name": "d3-hermes-skill-corpus",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "corpus:generate": "node scripts/generate-corpus.mjs",
+    "serve": "node server.mjs",
+    "docker:start": "npm run corpus:generate -- --source /skills-ro --output /app/public/data/skills-corpus.json && npm run build && npm run serve"
+  },
+  "dependencies": {
+    "d3": "^7.9.0",
+    "express": "^4.21.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.4",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.10"
+  }
+}
