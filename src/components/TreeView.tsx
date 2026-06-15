@@ -8,6 +8,7 @@ type TreeViewProps = {
     minX: number;
   };
   expandedIds: Set<string>;
+  highlightedSkillIds: Set<string>;
   selectedSkillId: string | null;
   onNodeClick: (node: CorpusNode) => void;
 };
@@ -18,7 +19,14 @@ function nodeColor(node: CorpusNode) {
   return '#10b981';
 }
 
-export function TreeView({ bounds, expandedIds, nodes, onNodeClick, selectedSkillId }: TreeViewProps) {
+export function TreeView({
+  bounds,
+  expandedIds,
+  highlightedSkillIds,
+  nodes,
+  onNodeClick,
+  selectedSkillId,
+}: TreeViewProps) {
   const nodeMap = new Map(nodes.map((node) => [node.id, node]));
 
   return (
@@ -38,20 +46,28 @@ export function TreeView({ bounds, expandedIds, nodes, onNodeClick, selectedSkil
 
           {nodes.map((node) => {
             const isSelected = node.data.skillId === selectedSkillId;
+            const isRelated = node.data.skillId ? highlightedSkillIds.has(node.data.skillId) : false;
             const isExpanded = expandedIds.has(node.id);
             const label = node.hasChildren
               ? `${node.data.name} (${isExpanded ? 'collapse' : 'expand'})`
               : node.data.name;
+            const nodeClassName = [
+              'tree-node',
+              isSelected ? 'selected' : '',
+              isRelated ? 'related' : '',
+            ]
+              .filter(Boolean)
+              .join(' ');
 
             return (
               <g
-                className="tree-node"
+                className={nodeClassName}
                 key={node.id}
                 onClick={() => onNodeClick(node.data)}
                 transform={`translate(${node.y}, ${node.x})`}
               >
                 <circle
-                  className={isSelected ? 'node-circle selected' : 'node-circle'}
+                  className={isSelected ? 'node-circle selected' : isRelated ? 'node-circle related' : 'node-circle'}
                   cx={0}
                   cy={0}
                   fill={nodeColor(node.data)}

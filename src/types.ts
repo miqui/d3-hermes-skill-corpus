@@ -11,7 +11,9 @@ export type SkillRecord = {
   version: string;
   tags: string[];
   relatedSkills: string[];
+  relatedSkillIds: Array<string | null>;
   summary: string;
+  bodyMarkdown: string;
   modifiedAt: string;
 };
 
@@ -47,4 +49,9 @@ export type VisibleNode = {
   data: CorpusNode;
   parentId?: string;
   hasChildren: boolean;
+};
+
+export type RelatedSkillReference = {
+  label: string;
+  skillId: string | null;
 };
