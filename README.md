@@ -7,6 +7,9 @@ Phase 1 local-only MVP for exploring the Hermes skill corpus as an interactive D
 - Loads Hermes skills from `~/.hermes/skills`
 - Generates an app-consumable JSON corpus into `public/data/skills-corpus.json`
 - Renders a collapsible tree explorer with a details panel
+- Supports search/filter by skill name or tag
+- Highlights related skills in the tree when a skill is selected
+- Shows a markdown preview for the selected skill body
 - Runs locally with Vite during development
 - Runs in Docker for a self-contained local preview
 
@@ -16,6 +19,7 @@ Phase 1 local-only MVP for exploring the Hermes skill corpus as an interactive D
 - D3 hierarchy/tree layout
 - Tiny Node corpus-generation script (`scripts/generate-corpus.mjs`)
 - Express static server for Docker/runtime preview
+- `marked` for lightweight markdown rendering
 
 ## Project structure
 
@@ -63,6 +67,7 @@ The generated JSON includes:
 - hierarchy tree nodes for D3
 - flattened skill metadata list
 - tags and related-skill references
+- markdown body content for preview rendering
 - corpus stats such as total skills and max depth
 
 ## Run locally
@@ -75,6 +80,14 @@ npm run dev
 ```
 
 Then open `http://localhost:5173`.
+
+### Explorer usage notes
+
+- Use the search box to filter the tree by skill name or tag.
+- The tree keeps matching folders/ancestors visible so filtered results stay navigable.
+- Selecting a skill highlights its related skills in the hierarchy.
+- The details panel includes both metadata and a rendered markdown preview of the skill body.
+- Related skill pills in the details panel can be clicked to jump directly to those skills when they resolve in the corpus.
 
 Preview production build locally:
 
@@ -105,15 +118,9 @@ This mounts your local Hermes skills directory read-only into the container at `
 - `npm run serve` — serve the built app with Express
 - `npm run docker:start` — container startup command
 
-## Notes for Phase 1
+## Notes for Phase 1.1
 
-- The explorer currently focuses on category/folder hierarchy plus skill metadata.
-- It is local-only and intended as a clean scaffold for future GitHub publication.
+- The explorer still focuses on category/folder hierarchy plus skill metadata, with lightweight enhancements layered onto the existing Phase 1 structure.
+- Search is intentionally simple and local: substring matching against skill names, slugs, and tags.
+- Related-skill highlighting is tree-based rather than a separate overlay/graph.
 - Docker could not be validated on this machine if the `docker` CLI is unavailable.
-
-## Next logical enhancements
-
-- search/filter by tag or skill name
-- graph overlays for `related_skills`
-- markdown preview for selected skills
-- richer corpus extraction from additional files under each skill directory

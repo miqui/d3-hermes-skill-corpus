@@ -29,6 +29,11 @@ svg text {
   user-select: none;
 }
 
+button,
+input {
+  font: inherit;
+}
+
 #root {
   min-height: 100vh;
 }
@@ -98,12 +103,67 @@ svg text {
 .panel-header p,
 .description,
 .muted,
-.empty-state {
+.empty-state,
+.tree-empty-state {
   color: #94a3b8;
 }
 
 .tree-panel {
   overflow: hidden;
+}
+
+.tree-toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-field {
+  display: grid;
+  gap: 8px;
+  flex: 1 1 320px;
+}
+
+.search-field span {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.search-field input {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(2, 6, 23, 0.78);
+  color: #e2e8f0;
+  outline: none;
+}
+
+.search-field input:focus {
+  border-color: rgba(129, 140, 248, 0.8);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.filter-summary {
+  min-width: 150px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.filter-summary strong {
+  display: block;
+  font-size: 1.15rem;
+}
+
+.filter-summary span {
+  color: #94a3b8;
+  font-size: 0.82rem;
 }
 
 .tree-wrapper {
@@ -131,11 +191,28 @@ svg text {
 .node-circle {
   stroke: rgba(255, 255, 255, 0.6);
   stroke-width: 1.5;
+  transition: stroke 120ms ease, stroke-width 120ms ease, filter 120ms ease;
 }
 
 .node-circle.selected {
   stroke: #f8fafc;
   stroke-width: 3;
+}
+
+.node-circle.related {
+  stroke: #facc15;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.38));
+}
+
+.tree-node.related .node-label {
+  fill: #fde68a;
+  font-weight: 600;
+}
+
+.tree-node.selected .node-label {
+  fill: #ffffff;
+  font-weight: 700;
 }
 
 .node-glyph {
@@ -147,6 +224,13 @@ svg text {
 .node-label {
   fill: #e2e8f0;
   font-size: 0.92rem;
+}
+
+.tree-empty-state {
+  border-radius: 16px;
+  border: 1px dashed rgba(148, 163, 184, 0.25);
+  background: rgba(2, 6, 23, 0.45);
+  padding: 28px;
 }
 
 .stats-grid {
@@ -230,6 +314,69 @@ svg text {
   color: #c7d2fe;
 }
 
+.pill.interactive {
+  cursor: pointer;
+}
+
+.markdown-preview {
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(2, 6, 23, 0.58);
+  padding: 18px;
+  overflow: auto;
+}
+
+.markdown-preview > :first-child {
+  margin-top: 0;
+}
+
+.markdown-preview > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4 {
+  margin-top: 1.1em;
+  margin-bottom: 0.5em;
+}
+
+.markdown-preview p,
+.markdown-preview li {
+  color: #dbe4f0;
+}
+
+.markdown-preview code {
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: 6px;
+  padding: 0.12em 0.35em;
+}
+
+.markdown-preview pre {
+  overflow: auto;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.markdown-preview pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.markdown-preview blockquote {
+  margin: 0;
+  padding-left: 14px;
+  border-left: 3px solid rgba(129, 140, 248, 0.55);
+  color: #cbd5e1;
+}
+
+.markdown-preview a {
+  color: #93c5fd;
+}
+
 .status-card {
   padding: 28px;
 }
@@ -262,5 +409,9 @@ svg text {
   .meta-grid,
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .tree-toolbar {
+    align-items: stretch;
   }
 }

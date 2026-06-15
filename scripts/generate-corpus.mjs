@@ -83,6 +83,12 @@ function summarizeBody(body) {
   return cleaned.slice(0, 220);
 }
 
+function normalizeRelatedSkill(value) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase();
+}
+
 function createRootNode() {
   return {
     id: 'root',
@@ -160,6 +166,8 @@ async function main() {
 
   const root = createRootNode();
   const skills = [];
+  const skillSlugIndex = new Map();
+  const skillNameIndex = new Map();
 
   for (const skillFile of skillFiles) {
     const relativeFilePath = path.relative(sourceRoot, skillFile);
@@ -171,11 +179,13 @@ async function main() {
     const { frontmatter, body } = parseFrontmatter(markdown);
     const nodeParent = ensurePathNode(root, groupSegments);
     const stat = await fs.stat(skillFile);
+    const skillId = segments.join('/');
+    const skillName = typeof frontmatter.name === 'string' ? frontmatter.name : folderName;
 
     const skill = {
-      id: segments.join('/'),
+      id: skillId,
       slug: folderName,
-      name: typeof frontmatter.name === 'string' ? frontmatter.name : folderName,
+      name: skillName,
       folderName,
       categoryPath: groupSegments,
       path: skillDir,
@@ -185,11 +195,15 @@ async function main() {
       version: typeof frontmatter.version === 'string' ? frontmatter.version : '',
       tags: extractTags(frontmatter),
       relatedSkills: extractRelatedSkills(frontmatter),
+      relatedSkillIds: [],
       summary: summarizeBody(body),
+      bodyMarkdown: body,
       modifiedAt: stat.mtime.toISOString(),
     };
 
     skills.push(skill);
+    skillSlugIndex.set(normalizeRelatedSkill(skill.slug), skill.id);
+    skillNameIndex.set(normalizeRelatedSkill(skill.name), skill.id);
 
     nodeParent.children.push({
       id: `skill:${skill.id}`,
@@ -203,6 +217,13 @@ async function main() {
     });
 
     nodeParent.children.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  for (const skill of skills) {
+    skill.relatedSkillIds = skill.relatedSkills.map((relatedSkill) => {
+      const normalized = normalizeRelatedSkill(relatedSkill);
+      return skillSlugIndex.get(normalized) ?? skillNameIndex.get(normalized) ?? null;
+    });
   }
 
   const corpus = {
