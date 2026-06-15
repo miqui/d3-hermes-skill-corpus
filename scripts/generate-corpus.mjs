@@ -7,7 +7,7 @@ import YAML from 'yaml';
 const args = process.argv.slice(2);
 const options = {
   source: '~/.hermes/skills',
-  output: 'public/data/skills-corpus.json',
+  output: 'data/skills-corpus.json',
 };
 
 for (let index = 0; index < args.length; index += 1) {
