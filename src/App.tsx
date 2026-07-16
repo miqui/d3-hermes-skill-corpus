@@ -89,7 +89,7 @@ function buildRelatedSkillReferences(selectedSkill: SkillRecord | null): Related
 
   return selectedSkill.relatedSkills.map((label, index) => ({
     label,
-    skillId: selectedSkill.relatedSkillIds[index] ?? null,
+    skillId: selectedSkill.relatedSkillIds?.[index] ?? null,
   }));
 }
 
@@ -179,22 +179,6 @@ function App() {
     if (!filteredTree) return [];
     return flattenVisibleNodes(filteredTree, effectiveExpandedIds);
   }, [effectiveExpandedIds, filteredTree]);
-
-  const bounds = useMemo(() => {
-    if (visibleNodes.length === 0) {
-      return { width: 800, height: 320, minX: 0 };
-    }
-
-    const minX = Math.min(...visibleNodes.map((node: VisibleNode) => node.x));
-    const maxX = Math.max(...visibleNodes.map((node: VisibleNode) => node.x));
-    const maxY = Math.max(...visibleNodes.map((node: VisibleNode) => node.y));
-
-    return {
-      width: maxY + 320,
-      height: maxX - minX + 160,
-      minX,
-    };
-  }, [visibleNodes]);
 
   useEffect(() => {
     if (!corpus) return;
@@ -294,7 +278,6 @@ function App() {
 
           {visibleNodes.length > 0 ? (
             <TreeView
-              bounds={bounds}
               expandedIds={effectiveExpandedIds}
               highlightedSkillIds={relatedSkillIds}
               nodes={visibleNodes}

@@ -1,17 +1,17 @@
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { select, zoom, zoomIdentity, type ZoomBehavior } from 'd3';
 import type { CorpusNode, VisibleNode } from '../types';
 
 type TreeViewProps = {
   nodes: VisibleNode[];
-  bounds: {
-    width: number;
-    height: number;
-    minX: number;
-  };
   expandedIds: Set<string>;
   highlightedSkillIds: Set<string>;
   selectedSkillId: string | null;
   onNodeClick: (node: CorpusNode) => void;
 };
+
+const FIT_PADDING = 48;
+const MAX_FIT_SCALE = 1.25;
 
 function nodeColor(node: CorpusNode) {
   if (node.type === 'root') return '#f97316';
@@ -20,19 +20,90 @@ function nodeColor(node: CorpusNode) {
 }
 
 export function TreeView({
-  bounds,
   expandedIds,
   highlightedSkillIds,
   nodes,
   onNodeClick,
   selectedSkillId,
 }: TreeViewProps) {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const contentRef = useRef<SVGGElement | null>(null);
+  const zoomBehaviorRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+
   const nodeMap = new Map(nodes.map((node) => [node.id, node]));
+  const layoutKey = useMemo(() => nodes.map((node) => node.id).join('|'), [nodes]);
+
+  useEffect(() => {
+    const svgElement = svgRef.current;
+    if (!svgElement) return;
+
+    const zoomBehavior = zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.05, 4])
+      .on('zoom', (event) => {
+        contentRef.current?.setAttribute('transform', event.transform.toString());
+      });
+
+    select(svgElement).call(zoomBehavior);
+    zoomBehaviorRef.current = zoomBehavior;
+
+    return () => {
+      select(svgElement).on('.zoom', null);
+    };
+  }, []);
+
+  const fitToView = useCallback((animate = true) => {
+    const svgElement = svgRef.current;
+    const contentElement = contentRef.current;
+    const zoomBehavior = zoomBehaviorRef.current;
+    if (!svgElement || !contentElement || !zoomBehavior) return;
+
+    const viewport = svgElement.getBoundingClientRect();
+    // getBBox ignores the element's own transform, so this measures the
+    // unzoomed layout extent including labels.
+    const contentBox = contentElement.getBBox();
+    if (!viewport.width || !viewport.height || !contentBox.width || !contentBox.height) return;
+
+    const scale = Math.min(
+      (viewport.width - FIT_PADDING) / contentBox.width,
+      (viewport.height - FIT_PADDING) / contentBox.height,
+      MAX_FIT_SCALE,
+    );
+    const translateX = (viewport.width - contentBox.width * scale) / 2 - contentBox.x * scale;
+    const translateY = (viewport.height - contentBox.height * scale) / 2 - contentBox.y * scale;
+    const transform = zoomIdentity.translate(translateX, translateY).scale(scale);
+
+    const selection = select(svgElement);
+    if (animate) {
+      selection.transition().duration(300).call(zoomBehavior.transform, transform);
+    } else {
+      selection.call(zoomBehavior.transform, transform);
+    }
+  }, []);
+
+  const zoomBy = useCallback((factor: number) => {
+    const svgElement = svgRef.current;
+    const zoomBehavior = zoomBehaviorRef.current;
+    if (!svgElement || !zoomBehavior) return;
+    select(svgElement).transition().duration(200).call(zoomBehavior.scaleBy, factor);
+  }, []);
+
+  useEffect(() => {
+    fitToView(false);
+  }, [fitToView, layoutKey]);
+
+  useEffect(() => {
+    const svgElement = svgRef.current;
+    if (!svgElement) return;
+
+    const observer = new ResizeObserver(() => fitToView(false));
+    observer.observe(svgElement);
+    return () => observer.disconnect();
+  }, [fitToView]);
 
   return (
     <div className="tree-wrapper">
-      <svg className="tree-svg" viewBox={`0 0 ${bounds.width} ${bounds.height}`} role="img">
-        <g transform={`translate(96, ${72 - bounds.minX})`}>
+      <svg className="tree-svg" ref={svgRef} role="img">
+        <g ref={contentRef}>
           {nodes.map((node) => {
             if (!node.parentId) return null;
             const parent = nodeMap.get(node.parentId);
@@ -86,6 +157,17 @@ export function TreeView({
           })}
         </g>
       </svg>
+      <div className="tree-controls">
+        <button aria-label="Zoom in" onClick={() => zoomBy(1.4)} type="button">
+          +
+        </button>
+        <button aria-label="Zoom out" onClick={() => zoomBy(1 / 1.4)} type="button">
+          −
+        </button>
+        <button aria-label="Fit tree to view" onClick={() => fitToView()} type="button">
+          Fit
+        </button>
+      </div>
     </div>
   );
 }

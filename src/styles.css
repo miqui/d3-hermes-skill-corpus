@@ -167,15 +167,47 @@ input {
 }
 
 .tree-wrapper {
-  overflow: auto;
+  position: relative;
+  overflow: hidden;
+  height: clamp(480px, 62vh, 720px);
   border-radius: 16px;
   border: 1px solid rgba(148, 163, 184, 0.12);
   background: rgba(2, 6, 23, 0.5);
 }
 
 .tree-svg {
+  display: block;
   width: 100%;
-  min-height: 480px;
+  height: 100%;
+  cursor: grab;
+}
+
+.tree-svg:active {
+  cursor: grabbing;
+}
+
+.tree-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.tree-controls button {
+  min-width: 34px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(30, 41, 59, 0.85);
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.tree-controls button:hover {
+  border-color: rgba(129, 140, 248, 0.8);
+  background: rgba(51, 65, 85, 0.9);
 }
 
 .tree-link {

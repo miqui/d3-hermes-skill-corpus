@@ -11,9 +11,9 @@ export type SkillRecord = {
   version: string;
   tags: string[];
   relatedSkills: string[];
-  relatedSkillIds: Array<string | null>;
+  relatedSkillIds?: Array<string | null>;
   summary: string;
-  bodyMarkdown: string;
+  bodyMarkdown?: string;
   modifiedAt: string;
 };
 
