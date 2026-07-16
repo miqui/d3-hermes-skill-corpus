@@ -56,4 +56,4 @@ export type RelatedSkillReference = {
   skillId: string | null;
 };
 
-export type DiagramType = 'tree' | 'sunburst' | 'circle-pack';
+export type DiagramType = 'tree' | 'sunburst' | 'circle-pack' | 'force-tree';
