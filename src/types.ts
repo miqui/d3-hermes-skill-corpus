@@ -55,3 +55,5 @@ export type RelatedSkillReference = {
   label: string;
   skillId: string | null;
 };
+
+export type DiagramType = 'tree' | 'sunburst';

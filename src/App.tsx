@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { hierarchy, tree as d3Tree, type HierarchyNode } from 'd3';
 import { loadCorpus } from './lib/loadCorpus';
-import type { CorpusNode, RelatedSkillReference, SkillCorpus, SkillRecord, VisibleNode } from './types';
+import type { CorpusNode, DiagramType, RelatedSkillReference, SkillCorpus, SkillRecord, VisibleNode } from './types';
 import { TreeView } from './components/TreeView';
+import { SunburstView } from './components/SunburstView';
 import { DetailsPanel } from './components/DetailsPanel';
 
 function collectExpandedIds(node: CorpusNode, depth = 0, result = new Set<string>()) {
@@ -97,6 +98,7 @@ function App() {
   const [corpus, setCorpus] = useState<SkillCorpus | null>(null);
   const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(['root']));
+  const [diagramType, setDiagramType] = useState<DiagramType>('tree');
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -256,10 +258,30 @@ function App() {
         <section className="panel tree-panel">
           <div className="panel-header">
             <h2>Hierarchy</h2>
-            <p>Search by skill name or tag, then click folders to expand or skills to inspect details.</p>
+            <p>
+              {diagramType === 'tree'
+                ? 'Search by skill name or tag, then click folders to expand or skills to inspect details.'
+                : 'Search by skill name or tag, then scroll or pinch to zoom, drag to pan, click a category arc to zoom in, the center to zoom out, or a skill arc to inspect details.'}
+            </p>
           </div>
 
           <div className="tree-toolbar">
+            <div className="diagram-toggle" role="group" aria-label="Diagram type">
+              <button
+                className={diagramType === 'tree' ? 'active' : ''}
+                onClick={() => setDiagramType('tree')}
+                type="button"
+              >
+                Collapsible tree
+              </button>
+              <button
+                className={diagramType === 'sunburst' ? 'active' : ''}
+                onClick={() => setDiagramType('sunburst')}
+                type="button"
+              >
+                Zoomable sunburst
+              </button>
+            </div>
             <label className="search-field" htmlFor="skill-search">
               <span>Search skills</span>
               <input
@@ -276,14 +298,23 @@ function App() {
             </div>
           </div>
 
-          {visibleNodes.length > 0 ? (
-            <TreeView
-              expandedIds={effectiveExpandedIds}
-              highlightedSkillIds={relatedSkillIds}
-              nodes={visibleNodes}
-              onNodeClick={toggleNode}
-              selectedSkillId={selectedSkillId}
-            />
+          {filteredTree && visibleNodes.length > 0 ? (
+            diagramType === 'tree' ? (
+              <TreeView
+                expandedIds={effectiveExpandedIds}
+                highlightedSkillIds={relatedSkillIds}
+                nodes={visibleNodes}
+                onNodeClick={toggleNode}
+                selectedSkillId={selectedSkillId}
+              />
+            ) : (
+              <SunburstView
+                highlightedSkillIds={relatedSkillIds}
+                onSelectSkill={handleSelectSkill}
+                selectedSkillId={selectedSkillId}
+                tree={filteredTree}
+              />
+            )
           ) : (
             <div className="tree-empty-state">
               <p>No skills matched “{searchTerm}”. Try a different name or tag.</p>
