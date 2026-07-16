@@ -186,7 +186,8 @@ input {
   cursor: grabbing;
 }
 
-.tree-controls {
+.tree-controls,
+.force-tree-controls {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -194,7 +195,8 @@ input {
   gap: 8px;
 }
 
-.tree-controls button {
+.tree-controls button,
+.force-tree-controls button {
   min-width: 34px;
   padding: 6px 10px;
   border-radius: 10px;
@@ -205,7 +207,8 @@ input {
   cursor: pointer;
 }
 
-.tree-controls button:hover {
+.tree-controls button:hover,
+.force-tree-controls button:hover {
   border-color: rgba(129, 140, 248, 0.8);
   background: rgba(51, 65, 85, 0.9);
 }
@@ -240,7 +243,8 @@ input {
 }
 
 .sunburst-wrapper,
-.circle-pack-wrapper {
+.circle-pack-wrapper,
+.force-tree-wrapper {
   position: relative;
   overflow: hidden;
   height: clamp(480px, 62vh, 720px);
@@ -261,6 +265,18 @@ input {
   width: 100%;
   height: 100%;
   touch-action: none;
+}
+
+.force-tree-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.force-tree-svg:active {
+  cursor: grabbing;
 }
 
 .sunburst-arc {
@@ -360,6 +376,49 @@ input {
   filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.38));
 }
 
+.force-tree-link {
+  stroke: rgba(148, 163, 184, 0.36);
+  stroke-width: 1.5;
+}
+
+.force-tree-circle {
+  stroke: rgba(255, 255, 255, 0.58);
+  stroke-width: 1.5;
+}
+
+.force-tree-node.selected .force-tree-circle {
+  stroke: #f8fafc;
+  stroke-width: 3;
+}
+
+.force-tree-node.related .force-tree-circle {
+  stroke: #facc15;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.38));
+}
+
+.force-tree-glyph {
+  fill: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.force-tree-label {
+  fill: #e2e8f0;
+  font-size: 0.82rem;
+  pointer-events: none;
+}
+
+.force-tree-node.selected .force-tree-label {
+  fill: #fff;
+  font-weight: 700;
+}
+
+.force-tree-node.related .force-tree-label {
+  fill: #fde68a;
+  font-weight: 600;
+}
+
 .circle-pack-label {
   fill: #e2e8f0;
   font-size: 11px;
@@ -367,7 +426,8 @@ input {
 }
 
 .sunburst-tooltip,
-.circle-pack-tooltip {
+.circle-pack-tooltip,
+.force-tree-tooltip {
   position: absolute;
   top: 0;
   left: 0;
@@ -385,13 +445,15 @@ input {
 }
 
 .sunburst-tooltip strong,
-.circle-pack-tooltip strong {
+.circle-pack-tooltip strong,
+.force-tree-tooltip strong {
   display: block;
   margin-bottom: 2px;
 }
 
 .sunburst-tooltip span,
-.circle-pack-tooltip span {
+.circle-pack-tooltip span,
+.force-tree-tooltip span {
   color: #94a3b8;
 }
 
