@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { hierarchy, tree as d3Tree, type HierarchyNode } from 'd3';
 import { loadCorpus } from './lib/loadCorpus';
 import type { CorpusNode, DiagramType, RelatedSkillReference, SkillCorpus, SkillRecord, VisibleNode } from './types';
+import { CirclePackingView } from './components/CirclePackingView';
 import { TreeView } from './components/TreeView';
 import { SunburstView } from './components/SunburstView';
 import { DetailsPanel } from './components/DetailsPanel';
@@ -261,7 +262,9 @@ function App() {
             <p>
               {diagramType === 'tree'
                 ? 'Search by skill name or tag, then click folders to expand or skills to inspect details.'
-                : 'Search by skill name or tag, then scroll or pinch to zoom, drag to pan, click a category arc to zoom in, the center to zoom out, or a skill arc to inspect details.'}
+                : diagramType === 'sunburst'
+                  ? 'Search by skill name or tag, then scroll or pinch to zoom, drag to pan, click a category arc to zoom in, the center to zoom out, or a skill arc to inspect details.'
+                  : 'Search by skill name or tag, then scroll or pinch to zoom, drag to pan, click a group circle to zoom in, click the background to zoom out, or click a skill circle to inspect details.'}
             </p>
           </div>
 
@@ -280,6 +283,13 @@ function App() {
                 type="button"
               >
                 Zoomable sunburst
+              </button>
+              <button
+                className={diagramType === 'circle-pack' ? 'active' : ''}
+                onClick={() => setDiagramType('circle-pack')}
+                type="button"
+              >
+                Circle packing
               </button>
             </div>
             <label className="search-field" htmlFor="skill-search">
@@ -307,8 +317,15 @@ function App() {
                 onNodeClick={toggleNode}
                 selectedSkillId={selectedSkillId}
               />
-            ) : (
+            ) : diagramType === 'sunburst' ? (
               <SunburstView
+                highlightedSkillIds={relatedSkillIds}
+                onSelectSkill={handleSelectSkill}
+                selectedSkillId={selectedSkillId}
+                tree={filteredTree}
+              />
+            ) : (
+              <CirclePackingView
                 highlightedSkillIds={relatedSkillIds}
                 onSelectSkill={handleSelectSkill}
                 selectedSkillId={selectedSkillId}
