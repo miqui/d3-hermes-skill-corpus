@@ -1,5 +1,7 @@
 # d3-hermes-skill-corpus
 
+<img width="1893" height="839" alt="Screenshot 2026-07-31 151447" src="https://github.com/user-attachments/assets/2696f9df-10a6-4a96-a134-910473464a2e" />
+
 Phase 1 local-only MVP for exploring the Hermes skill corpus as an interactive D3 hierarchy.
 
 ## What this is
