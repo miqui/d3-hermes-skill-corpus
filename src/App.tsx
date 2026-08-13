@@ -125,12 +125,14 @@ function App() {
   const visibleSkillIds = useMemo(() => {
     const next = new Set(filteredSkillIds);
 
-    if (selectedSkillId) {
+    // Keep the selected skill visible only when there is no active search.
+    // During a search, only skills that actually match the query should appear.
+    if (selectedSkillId && !normalizedSearchTerm) {
       next.add(selectedSkillId);
     }
 
     return next;
-  }, [filteredSkillIds, selectedSkillId]);
+  }, [filteredSkillIds, selectedSkillId, normalizedSearchTerm]);
 
   const filteredTree = useMemo(() => {
     if (!corpus) return null;
