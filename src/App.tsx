@@ -9,7 +9,7 @@ import { SunburstView } from './components/SunburstView';
 import { DetailsPanel } from './components/DetailsPanel';
 
 function collectExpandedIds(node: CorpusNode, depth = 0, result = new Set<string>()) {
-  if (depth <= 1) {
+  if (depth === 0) {
     result.add(node.id);
   }
 
