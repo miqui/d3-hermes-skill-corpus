@@ -67,15 +67,6 @@ function filterTree(node: CorpusNode, visibleSkillIds: Set<string>): CorpusNode 
   return null;
 }
 
-function collectGroupIds(node: CorpusNode, result = new Set<string>()) {
-  if (node.children?.length) {
-    result.add(node.id);
-    node.children.forEach((child) => collectGroupIds(child, result));
-  }
-
-  return result;
-}
-
 function buildSkillAncestorMap(node: CorpusNode, ancestorIds: string[] = [], result = new Map<string, string[]>()) {
   if (node.type === 'skill' && node.skillId) {
     result.set(node.skillId, ancestorIds);
@@ -163,21 +154,48 @@ function App() {
   const effectiveExpandedIds = useMemo(() => {
     const next = new Set(expandedIds);
     next.add('root');
+    return next;
+  }, [expandedIds]);
 
-    if (filteredTree && normalizedSearchTerm) {
-      collectGroupIds(filteredTree).forEach((id) => next.add(id));
+  // When a skill is selected (via search auto-select, details panel, or tree click),
+  // expand its ancestor groups once so the user can see it in context.
+  // This is a side effect, not a derived override — user collapses are preserved.
+  useEffect(() => {
+    if (!selectedSkillId || !skillAncestorMap.size) return;
+
+    setExpandedIds((current) => {
+      const ancestors = skillAncestorMap.get(selectedSkillId);
+      if (!ancestors?.length) return current;
+
+      const hasAll = ancestors.every((id) => current.has(id));
+      if (hasAll) return current;
+
+      const next = new Set(current);
+      ancestors.forEach((id) => next.add(id));
+      return next;
+    });
+  }, [selectedSkillId, skillAncestorMap]);
+
+  useEffect(() => {
+    if (!corpus) return;
+
+    if (!normalizedSearchTerm) {
+      setExpandedIds(new Set(['root']));
+      return;
     }
 
-    const emphasizedSkillIds = selectedSkill
-      ? [selectedSkill.id, ...relatedSkillReferences.flatMap((reference) => (reference.skillId ? [reference.skillId] : []))]
-      : [];
+    const ancestorMap = buildSkillAncestorMap(corpus.tree);
+    const next = new Set<string>(['root']);
 
-    emphasizedSkillIds.forEach((skillId) => {
-      skillAncestorMap.get(skillId)?.forEach((ancestorId) => next.add(ancestorId));
-    });
+    corpus.skills
+      .filter((skill: SkillRecord) => matchesSkillQuery(skill, normalizedSearchTerm))
+      .forEach((skill: SkillRecord) => {
+        ancestorMap.get(skill.id)?.forEach((ancestorId) => next.add(ancestorId));
+      });
 
-    return next;
-  }, [expandedIds, filteredTree, normalizedSearchTerm, relatedSkillReferences, selectedSkill, skillAncestorMap]);
+    setExpandedIds(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [normalizedSearchTerm, corpus]);
 
   const visibleNodes = useMemo(() => {
     if (!filteredTree) return [];
